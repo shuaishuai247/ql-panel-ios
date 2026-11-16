@@ -1,3 +1,15 @@
 name: Probe
-on:/n  workflow_dispatch:/njobs:/n  probe:/n    runs-on: ubuntu-latest
-    steps:/n      - run: echo ubuntu-ok
+
+on:
+  push:
+    paths: [".github/workflows/probe.yml"]
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo
+        run: |
+          echo ubuntu-ok
+          uname -a
