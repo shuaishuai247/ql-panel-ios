@@ -29,7 +29,12 @@ class ViewController: UIViewController, WKUIDelegate {
         let web = WKWebView(frame: view.bounds, configuration: config)
         web.uiDelegate = self // 没有它 JS 的 confirm()/alert() 会静默失效
         web.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        // 消除加载期间的白屏：WebView 透明露出深色底层，页面底层色也设为深色
+        web.isOpaque = false
         web.backgroundColor = .clear
+        if #available(iOS 15.0, *) {
+            web.underPageBackgroundColor = UIColor(red: 0.059, green: 0.071, blue: 0.094, alpha: 1)
+        }
         web.scrollView.contentInsetAdjustmentBehavior = .never
         web.scrollView.keyboardDismissMode = .onDrag
         view.addSubview(web)
