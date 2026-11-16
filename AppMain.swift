@@ -29,14 +29,26 @@ class ViewController: UIViewController {
         let web = WKWebView(frame: view.bounds, configuration: config)
         web.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         web.backgroundColor = .clear
-        web.scrollView.contentInsetAdjustmentBehavior = .never // 全屏铺到刘海区域
+        web.scrollView.contentInsetAdjustmentBehavior = .never
         web.scrollView.keyboardDismissMode = .onDrag
         view.addSubview(web)
+
+        // 关键：网页固定在安全区内，避免内容被状态栏（时间/电量）和底部小白条遮挡
+        web.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            web.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            web.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            web.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            web.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
 
         if let url = URL(string: PANEL_URL) {
             web.load(URLRequest(url: url))
         }
     }
+
+    // 深色背景下状态栏文字用白色，清晰可见
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
     // 支持竖屏
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
