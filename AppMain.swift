@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, WKUIDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.059, green: 0.071, blue: 0.094, alpha: 1) // #0f1218
@@ -27,6 +27,7 @@ class ViewController: UIViewController {
         config.allowsInlineMediaPlayback = true
 
         let web = WKWebView(frame: view.bounds, configuration: config)
+        web.uiDelegate = self // 没有它 JS 的 confirm()/alert() 会静默失效
         web.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         web.backgroundColor = .clear
         web.scrollView.contentInsetAdjustmentBehavior = .never
@@ -49,6 +50,30 @@ class ViewController: UIViewController {
 
     // 深色背景下状态栏文字用白色，清晰可见
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+
+    // JS alert() —— 顶部横幅式提示
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        let ac = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "确定", style: .default) { _ in completionHandler() })
+        present(ac, animated: true)
+    }
+
+    // JS confirm() —— 确认对话框（清空日志/删除任务等）
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        let ac = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "确定", style: .default) { _ in completionHandler(true) })
+        ac.addAction(UIAlertAction(title: "取消", style: .cancel) { _ in completionHandler(false) })
+        present(ac, animated: true)
+    }
+
+    // JS prompt() —— 输入对话框
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        let ac = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
+        ac.addTextField { $0.text = defaultText }
+        ac.addAction(UIAlertAction(title: "确定", style: .default) { _ in completionHandler(ac.textFields?.first?.text) })
+        ac.addAction(UIAlertAction(title: "取消", style: .cancel) { _ in completionHandler(nil) })
+        present(ac, animated: true)
+    }
 
     // 支持竖屏
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
