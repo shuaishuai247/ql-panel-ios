@@ -20,6 +20,16 @@ xcrun -sdk iphoneos swiftc \
   -o "build/Payload/${APP_NAME}.app/${APP_NAME}" \
   AppMain.swift
 
+echo "=== 编译深色启动屏颜色资源 (Assets.car)..."
+mkdir -p actool_out
+xcrun actool \
+  --compile "build/Payload/${APP_NAME}.app" \
+  --output-partial-info-plist "actool_out/partial.plist" \
+  --minimum-deployment-target 14.0 \
+  --platform iphoneos \
+  Assets.xcassets
+rm -rf actool_out
+
 echo "=== 组装 .app 包..."
 cp Info.plist "build/Payload/${APP_NAME}.app/"
 cp icon-180.png "build/Payload/${APP_NAME}.app/AppIcon60x60@2x.png"
