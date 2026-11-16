@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ipa-build
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-14
