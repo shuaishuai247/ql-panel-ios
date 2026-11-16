@@ -1,0 +1,15 @@
+name: MacProbe
+
+on:
+  push:
+    paths: [".github/workflows/mac-probe.yml"]
+
+jobs:
+  m1:
+    runs-on: macos-latest
+    steps:
+      - run: echo macos-latest-ok && sw_vers
+  m2:
+    runs-on: macos-13
+    steps:
+      - run: echo macos-13-ok && sw_vers
